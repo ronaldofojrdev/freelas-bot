@@ -1,5 +1,7 @@
 # freelas-bot
 
+![CI](https://github.com/ronaldofojrdev/freelas-bot/actions/workflows/ci.yml/badge.svg) ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
+
 Bot que olha os projetos novos de Web, Mobile e Software no 99Freelas, pede para um modelo de IA local decidir se vale a pena e, se valer, preenche e envia a proposta. Roda no próprio PC, sem pagar API: o modelo é o `qwen2.5:7b` servido pelo Ollama.
 
 Comecei esse projeto para parar de perder tempo lendo anúncio por anúncio. Ele é uma ferramenta pessoal e um experimento, então leia a seção de limitações antes de usar.
