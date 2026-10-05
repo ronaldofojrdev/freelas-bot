@@ -1,6 +1,6 @@
 # freelas-bot
 
-![CI](https://github.com/ronaldofojrdev/freelas-bot/actions/workflows/ci.yml/badge.svg) ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![Python](https://img.shields.io/badge/python-3.10%2B-3776AB) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 Bot que olha os projetos novos de Web, Mobile e Software no 99Freelas, pede para um modelo de IA local decidir se vale a pena e, se valer, preenche e envia a proposta. Roda no próprio PC, sem pagar API: o modelo é o `qwen2.5:7b` servido pelo Ollama.
 
@@ -58,6 +58,18 @@ Cada execução faz um ciclo e termina. Para rodar a cada 20 minutos, use o agen
 - Antes de enviar, o bot confere se o campo de valor mostra o preço certo. O site tem uma máscara de moeda que já fez uma proposta sair 100 vezes maior; se o valor não bater, ele cancela e registra o erro.
 - Se o layout do 99Freelas mudar, os seletores de `scraper.py` e `bidder.py` quebram. O bot registra o erro, mas alguém precisa ajustar.
 - Automatizar o envio pode ir contra os termos de uso da plataforma. Use por sua conta e risco.
+
+## Problemas que apareceram e como resolvi
+
+**Proposta saindo 100 vezes mais cara.** O campo "Sua oferta" do site tem uma máscara de moeda. Digitar em cima de um valor que já estava no campo fazia a oferta sair cerca de 100 vezes maior que a calculada. Passei a limpar o campo antes de digitar e, antes de enviar, ler de volta o que ficou escrito e comparar com o valor calculado. Se não bater, o envio é cancelado e o erro vai para o log (`bidder.py`).
+
+**O modelo inventando experiência.** O modelo local escrevia frases como "já fizemos um projeto parecido" sobre casos que nunca existiram, e às vezes deixava placeholders como "[links de projetos]" sem preencher. Pedir no prompt para não fazer isso não bastou. Então `validate_proposal_text` (`bot.py`) procura esses padrões no texto gerado e descarta a proposta se encontrar algum, em vez de confiar na obediência do modelo.
+
+**Preço fora da realidade.** O modelo de 7B errava a conta do preço. O bot lê o valor médio real das propostas já enviadas ao projeto e, depois da resposta do modelo, força a oferta a ficar dentro de uma faixa proporcional a essa média (`enforce_price_bounds`).
+
+**Projetos saturados.** Com muitas propostas já enviadas, a chance é baixa e o esforço é o mesmo. Projetos acima de um limite de propostas são pulados antes de gastar uma chamada ao modelo.
+
+A lição que ficou: com um modelo pequeno, o que não pode dar errado tem de ser garantido pelo código, e o prompt serve só para o que tolera erro.
 
 ## Estrutura
 
