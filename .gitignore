@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+browser_profile/
+logs/
+seen_projects.json
+.env
